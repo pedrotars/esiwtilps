@@ -4,6 +4,7 @@ import { SupabaseAppProvider } from './context/SupabaseAppContext';
 import { Dashboard } from './pages/Dashboard';
 import { CategoryExpenses } from './pages/CategoryExpenses';
 import styled, { createGlobalStyle } from 'styled-components';
+import './debug';
 
 const GlobalStyle = createGlobalStyle`
   * {
