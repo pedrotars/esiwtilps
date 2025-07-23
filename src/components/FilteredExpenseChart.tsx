@@ -1,7 +1,7 @@
 import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import styled from 'styled-components';
-import { useApp } from '../context/AppContext';
+import { useSupabaseApp } from '../context/SupabaseAppContext';
 import { useNavigate } from 'react-router-dom';
 import { Expense } from '../types';
 
@@ -48,7 +48,7 @@ export const FilteredExpenseChart: React.FC<FilteredExpenseChartProps> = ({
   expenses, 
   title = "Expense Breakdown" 
 }) => {
-  const { state } = useApp();
+  const { state } = useSupabaseApp();
   const navigate = useNavigate();
 
   const chartData: ChartData[] = state.categories.map(category => {
