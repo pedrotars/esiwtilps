@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useApp } from '../context/AppContext';
+import { useSupabaseApp } from '../context/SupabaseAppContext';
 import { calculateSettlements, getUserBalance } from '../utils/settlements';
 import { Payment } from '../types';
 import { v4 as uuidv4 } from 'uuid';
@@ -104,7 +104,7 @@ const NoSettlements = styled.div`
 `;
 
 export const SettlementsSummary: React.FC = () => {
-  const { state, dispatch } = useApp();
+  const { state, addPayment } = useSupabaseApp();
   
   const settlements = calculateSettlements(state.expenses, state.users, state.payments);
   const userBalances = state.users.map(user => ({
@@ -117,7 +117,7 @@ export const SettlementsSummary: React.FC = () => {
     return user?.name || 'Unknown';
   };
 
-  const handleSettlePayment = (from: string, to: string, amount: number) => {
+  const handleSettlePayment = async (from: string, to: string, amount: number) => {
     const payment: Payment = {
       id: uuidv4(),
       from,
@@ -127,7 +127,7 @@ export const SettlementsSummary: React.FC = () => {
       description: `Settlement payment from ${getUserName(from)} to ${getUserName(to)}`
     };
 
-    dispatch({ type: 'ADD_PAYMENT', payload: payment });
+    await addPayment(payment);
   };
 
   return (

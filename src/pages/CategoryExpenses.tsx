@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { useApp } from '../context/AppContext';
+import { useSupabaseApp } from '../context/SupabaseAppContext';
 import { ExpenseList } from '../components/ExpenseList';
 
 const Container = styled.div`
@@ -95,7 +95,7 @@ const NoExpensesMessage = styled.div`
 export const CategoryExpenses: React.FC = () => {
   const { categoryId } = useParams<{ categoryId: string }>();
   const navigate = useNavigate();
-  const { state } = useApp();
+  const { state } = useSupabaseApp();
 
   const category = state.categories.find(cat => cat.id === categoryId);
   const categoryExpenses = state.expenses.filter(expense => expense.categoryId === categoryId);

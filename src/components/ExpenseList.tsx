@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useApp } from '../context/AppContext';
+import { useSupabaseApp } from '../context/SupabaseAppContext';
 import { Expense } from '../types';
 import { format } from 'date-fns';
 import { exportExpensesToCSV } from '../utils/csvExport';
@@ -128,7 +128,7 @@ export const ExpenseList: React.FC<ExpenseListProps> = ({
   onEdit,
   showDownload = false
 }) => {
-  const { state, dispatch } = useApp();
+  const { state, deleteExpense } = useSupabaseApp();
   
   const expensesToShow = expenses || state.expenses;
   
@@ -138,9 +138,9 @@ export const ExpenseList: React.FC<ExpenseListProps> = ({
   const getUserById = (id: string) => 
     state.users.find(user => user.id === id);
 
-  const handleDelete = (expenseId: string) => {
+  const handleDelete = async (expenseId: string) => {
     if (window.confirm('Are you sure you want to delete this expense?')) {
-      dispatch({ type: 'DELETE_EXPENSE', payload: expenseId });
+      await deleteExpense(expenseId);
     }
   };
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { useApp } from '../context/AppContext';
+import { useSupabaseApp } from '../context/SupabaseAppContext';
 import { Category } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -126,7 +126,7 @@ const CancelButton = styled(Button)`
 `;
 
 export const CategoryManager: React.FC = () => {
-  const { state, dispatch } = useApp();
+  const { state, addCategory, updateCategory, deleteCategory } = useSupabaseApp();
   const [showForm, setShowForm] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [formData, setFormData] = useState({
@@ -135,7 +135,7 @@ export const CategoryManager: React.FC = () => {
     icon: '📂'
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.name.trim()) {
@@ -151,9 +151,9 @@ export const CategoryManager: React.FC = () => {
     };
 
     if (editingCategory) {
-      dispatch({ type: 'UPDATE_CATEGORY', payload: categoryData });
+      await updateCategory(categoryData);
     } else {
-      dispatch({ type: 'ADD_CATEGORY', payload: categoryData });
+      await addCategory(categoryData);
     }
 
     resetForm();
@@ -175,7 +175,7 @@ export const CategoryManager: React.FC = () => {
     setShowForm(true);
   };
 
-  const handleDelete = (categoryId: string) => {
+  const handleDelete = async (categoryId: string) => {
     const hasExpenses = state.expenses.some(expense => expense.categoryId === categoryId);
     
     if (hasExpenses) {
@@ -184,7 +184,7 @@ export const CategoryManager: React.FC = () => {
     }
 
     if (window.confirm('Are you sure you want to delete this category?')) {
-      dispatch({ type: 'DELETE_CATEGORY', payload: categoryId });
+      await deleteCategory(categoryId);
     }
   };
 

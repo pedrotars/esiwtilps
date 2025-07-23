@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { useApp } from '../context/AppContext';
+import { useSupabaseApp } from '../context/SupabaseAppContext';
 import { User } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -134,7 +134,7 @@ const EditForm = styled.div`
 `;
 
 export const UserManager: React.FC = () => {
-  const { state, dispatch } = useApp();
+  const { state, addUser, updateUser, deleteUser } = useSupabaseApp();
   const [showForm, setShowForm] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [formData, setFormData] = useState({
@@ -142,7 +142,7 @@ export const UserManager: React.FC = () => {
     email: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.name.trim() || !formData.email.trim()) {
@@ -157,9 +157,9 @@ export const UserManager: React.FC = () => {
     };
 
     if (editingUser) {
-      dispatch({ type: 'UPDATE_USER', payload: userData });
+      await updateUser(userData);
     } else {
-      dispatch({ type: 'ADD_USER', payload: userData });
+      await addUser(userData);
     }
 
     resetForm();
@@ -180,7 +180,7 @@ export const UserManager: React.FC = () => {
     setShowForm(true);
   };
 
-  const handleDelete = (userId: string) => {
+  const handleDelete = async (userId: string) => {
     if (state.users.length <= 1) {
       alert('Cannot delete the last user. At least one user is required.');
       return;
@@ -196,7 +196,7 @@ export const UserManager: React.FC = () => {
     }
 
     if (window.confirm('Are you sure you want to delete this user?')) {
-      dispatch({ type: 'DELETE_USER', payload: userId });
+      await deleteUser(userId);
     }
   };
 

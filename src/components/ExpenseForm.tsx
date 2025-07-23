@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { useApp } from '../context/AppContext';
+import { useSupabaseApp } from '../context/SupabaseAppContext';
 import { Expense } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 import { AICategorization } from '../services/aiCategorization';
@@ -123,7 +123,7 @@ interface ExpenseFormProps {
 }
 
 export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onClose, expense }) => {
-  const { state, dispatch } = useApp();
+  const { state, addExpense, updateExpense } = useSupabaseApp();
   const [description, setDescription] = useState(expense?.description || '');
   const [amount, setAmount] = useState(expense?.amount?.toString() || '');
   const [categoryId, setCategoryId] = useState(expense?.categoryId || '');
@@ -161,7 +161,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onClose, expense }) =>
     return () => clearTimeout(timeoutId);
   }, [description, state.categories, state.expenses, expense]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!description || !amount || !categoryId || !paidBy) {
@@ -185,9 +185,9 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onClose, expense }) =>
     };
 
     if (expense) {
-      dispatch({ type: 'UPDATE_EXPENSE', payload: expenseData });
+      await updateExpense(expenseData);
     } else {
-      dispatch({ type: 'ADD_EXPENSE', payload: expenseData });
+      await addExpense(expenseData);
     }
 
     onClose();
